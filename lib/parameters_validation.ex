@@ -5,17 +5,21 @@ defmodule Qfit.Plug.ParametersValidation do
   @moduledoc false
 
   def validate(%{} = types) do
-    [private: %{validator: types}]
+    validate(types, optionals: [])
   end
 
-  def validate(validator) do
-    [private: %{validator: validator}]
+  def validate(%{} = types, optionals: optionals) do
+    keys = Map.keys(types)
+    required = keys |> Enum.filter(fn key -> key not in optionals end)
+    default = optionals |> Map.new(fn key -> {key, nil} end)
+
+    [private: %{validator: {types, keys, required, default}}]
   end
 
   def parameters_validation(%{method: "POST", private: %{validator: validator}} = conn, _opts) do
     body_params = conn.body_params
 
-    case validate(body_params, validator) do
+    case use_validator(body_params, validator) do
       :skipped ->
         conn
 
@@ -42,36 +46,24 @@ defmodule Qfit.Plug.ParametersValidation do
     conn
   end
 
-  defp validate(body_params, %{} = types) do
-    changeset = default_validator(body_params, types)
+  defp use_validator(body_params, {types, keys, required, default}) do
+    changeset = default_validator(body_params, types, keys, required)
 
     if changeset.valid? do
-      {:ok, changeset.changes}
+      {:ok, default |> Map.merge(changeset.changes)}
     else
       {:error, error_messages(changeset)}
     end
   end
 
-  defp validate(_, nil) do
+  defp use_validator(_, _) do
     :skipped
   end
 
-  defp validate(body_params, validator) do
-    changeset = validator.(body_params)
-
-    if changeset.valid? do
-      {:ok, changeset.changes}
-    else
-      {:error, error_messages(changeset)}
-    end
-  end
-
-  defp default_validator(body_params, types) do
-    keys = Map.keys(types)
-
+  defp default_validator(body_params, types, keys, required) do
     {body_params, types}
     |> Ecto.Changeset.cast(body_params, keys)
-    |> Ecto.Changeset.validate_required(keys)
+    |> Ecto.Changeset.validate_required(required)
   end
 
   defp error_messages(changeset) do

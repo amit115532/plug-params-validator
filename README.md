@@ -18,14 +18,14 @@ In your router:
 import Qfit.Plug.ParametersValidator
 ```
 
-in order to get easy access to validate/1 function and :parameters_validation plug
+in order to get easy access to `validate/1` function and `:parameters_validation` plug
 
 Then, add the following plug. make sure it happens after the body parser plug:
 ```elixir
 plug :parameters_validation
 ```
 
-Now, every post endpoint with validate/1 will validate body_params
+Now, every post endpoint with `validate/1` will validate `body_params`
 example:
 ```elixir
 post "/register", validate(%{first_name: :string, last_name: :string, age: :integer}) do
@@ -37,25 +37,17 @@ post "/register", validate(%{first_name: :string, last_name: :string, age: :inte
 end
 ```
 
-validate is also taking a delegate to a validation function which should return an
-ecto changeset. This allows for a more complex validation.
-lets say, age can only be larger than 12:
-
+if you would like to specify optional fields, you can pass a list to the `:optionals` parameter in `validate/2`
+optionals will be defaulted to nil.
+example:
 ```elixir
-post "/register", validate(&register_validation/2) do
+post "/register", validate(%{first_name: :string, last_name: :string, age: :integer, phone: :string}, optionals: [:phone]) do
   first_name = conn.body_params.first_name
   last_name = conn.body_params.last_name
   age = conn.body_params.num
-  ...
-end
 
-defp register_validation(body_params) do
-  types = %{first_name: :string, last_name: :string, age: :integer}
-  keys = Map.keys(%{first_name: :string, last_name: :string, age: :integer})
-  {body_params, types}
-    |> Ecto.Changeset.cast(body_params, keys)
-    |> Ecto.Changeset.validate_required(keys)
-    |> Ecto.Changeset.validate_number(:age, greater_than: 12)
+  phone = conn.body_params.phone || Phone.default_value 
+  ...
 end
 ```
 
