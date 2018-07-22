@@ -22,7 +22,7 @@ in order to get easy access to `validate/1` function and `:body_params_validatio
 
 Then, add the following plug. make sure it happens after the body parser plug:
 ```elixir
-plug :parameters_validation
+plug :body_params_validation
 ```
 
 Now, every post endpoint with `validate/1` will validate `body_params`
