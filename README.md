@@ -1,4 +1,4 @@
-# QfitParametersValidation
+# BodyParamValidation
 
 Provides functionality for validating http request parameters
 
@@ -7,7 +7,7 @@ Provides functionality for validating http request parameters
 ```elixir
 def deps do
   [
-    {:qfit_parameters_validation, "~> 0.1.0"}
+    {:body_param_validation, "~> 0.1.0"}
   ]
 end
 ```
