@@ -1,7 +1,7 @@
 import Plug.Conn
 require Logger
 
-defmodule Qfit.Plug.ParametersValidation do
+defmodule BodyParamsValidation do
   @moduledoc false
 
   def validate(%{} = types) do
@@ -16,7 +16,7 @@ defmodule Qfit.Plug.ParametersValidation do
     [private: %{validator: {types, keys, required, default}}]
   end
 
-  def parameters_validation(%{method: "POST", private: %{validator: validator}} = conn, _opts) do
+  def body_params_validation(%{method: "POST", private: %{validator: validator}} = conn, _opts) do
     body_params = conn.body_params
 
     case use_validator(body_params, validator) do
@@ -34,7 +34,7 @@ defmodule Qfit.Plug.ParametersValidation do
     end
   end
 
-  def parameters_validation(%{private: %{validator: _}} = conn, _opts) do
+  def body_params_validation(%{private: %{validator: _}} = conn, _opts) do
     Logger.error(
       "Can only use validate() with a POST request, path: (#{conn.method}) #{conn.request_path}"
     )
@@ -42,7 +42,7 @@ defmodule Qfit.Plug.ParametersValidation do
     raise "can only use validate() with a POST request"
   end
 
-  def parameters_validation(conn, _opts) do
+  def body_params_validation(conn, _opts) do
     conn
   end
 

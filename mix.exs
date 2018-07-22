@@ -1,9 +1,9 @@
-defmodule QfitParametersValidation.MixProject do
+defmodule BodyParamsValidation.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :qfit_parameters_validation,
+      app: :body_param_validation,
       version: "0.1.5",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
@@ -33,13 +33,12 @@ defmodule QfitParametersValidation.MixProject do
 
   defp package do
     [
-      organization: "qfit",
-      description: "provides functionality for validating HTTP request parameters",
+      description: "a plug for body param validation",
       licenses: ["MIT License"],
       # These are the default files included in the package
       files: ["lib", "mix.exs", "LICENSE.md", "README.md"],
-      maintainers: ["Amit Ozalvo", "Guy Lyuboshits"],
-      links: %{"GitLab" => "https://gitlab.com/qfit/qfit-parameters_validation"}
+      maintainers: ["Amit Ozalvo"],
+      links: %{"GitLab" => "https://github.com/amit115532/plug-body-validator"}
     ]
   end
 end

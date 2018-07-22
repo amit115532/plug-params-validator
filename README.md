@@ -15,10 +15,10 @@ end
 ## Usage
 In your router:
 ```elixir
-import Qfit.Plug.ParametersValidator
+import BodyParamsValidation
 ```
 
-in order to get easy access to `validate/1` function and `:parameters_validation` plug
+in order to get easy access to `validate/1` function and `:body_param_validation` plug
 
 Then, add the following plug. make sure it happens after the body parser plug:
 ```elixir
