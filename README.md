@@ -1,13 +1,13 @@
 # BodyParamValidation
 
-Provides functionality for validating http request parameters
+Provides functionality for validating post body parameters
 
 ## Installation
 
 ```elixir
 def deps do
   [
-    {:body_param_validation, "~> 0.1.0"}
+    {:body_params_validation, "~> 0.1.0"}
   ]
 end
 ```
@@ -18,7 +18,7 @@ In your router:
 import BodyParamsValidation
 ```
 
-in order to get easy access to `validate/1` function and `:body_param_validation` plug
+in order to get easy access to `validate/1` function and `:body_params_validation` plug
 
 Then, add the following plug. make sure it happens after the body parser plug:
 ```elixir

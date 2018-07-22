@@ -3,7 +3,7 @@ defmodule BodyParamsValidation.MixProject do
 
   def project do
     [
-      app: :body_param_validation,
+      app: :body_params_validation,
       version: "0.1.5",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
