@@ -1,4 +1,4 @@
-# BodyParamValidation
+# BodyParamsValidation
 
 Provides functionality for validating post body parameters
 
