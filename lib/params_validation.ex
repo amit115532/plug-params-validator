@@ -107,7 +107,6 @@ defmodule ParamsValidation do
 
   defp use_validator(params, types, keys, required, default) do
     changeset = default_validator(params, types, keys, required)
-    IO.inspect changeset
     if changeset.valid? do
       {:ok, default |> Map.merge(changeset.changes)}
     else
