@@ -1,8 +1,17 @@
+require Logger
 import Plug.Conn
 require Logger
 
 defmodule ParamsValidation do
   @moduledoc false
+
+  @doc """
+  # opts
+  :log_errors? - boolean value indicating whether to log errors (defaults to false)
+  """
+  def init(opts) do
+    [log_errors?: opts[:log_errors?] || false]
+  end
 
   @doc """
     ## opts
@@ -37,7 +46,7 @@ defmodule ParamsValidation do
     ]
   end
 
-  def params_validation(
+  def call(
         %{
           method: "GET",
           private: %{
@@ -46,7 +55,7 @@ defmodule ParamsValidation do
                _default_body_params}
           }
         } = conn,
-        _opts
+        log_errors?: log_errors?
       ) do
     path_params = conn.path_params
 
@@ -58,6 +67,8 @@ defmodule ParamsValidation do
         conn
 
       {:error, errors} ->
+        if log_errors?, do: log_error(errors)
+
         conn
         |> put_resp_content_type("application/json")
         |> send_resp(400, Poison.encode!(%{errors: errors}))
@@ -65,7 +76,7 @@ defmodule ParamsValidation do
     end
   end
 
-  def params_validation(
+  def call(
         %{
           private: %{
             params_validator:
@@ -73,7 +84,7 @@ defmodule ParamsValidation do
                default_body_params}
           }
         } = conn,
-        _opts
+        log_errors?: log_errors?
       ) do
     body_params = conn.body_params
     path_params = conn.path_params
@@ -91,6 +102,8 @@ defmodule ParamsValidation do
       %{conn | body_params: applied_body_params}
     else
       {:error, errors} ->
+        if log_errors?, do: log_error(errors)
+
         conn
         |> put_resp_content_type("application/json")
         |> send_resp(400, Poison.encode!(%{errors: errors}))
@@ -98,7 +111,7 @@ defmodule ParamsValidation do
     end
   end
 
-  def params_validation(
+  def call(
         conn,
         _opts
       ) do
@@ -107,6 +120,7 @@ defmodule ParamsValidation do
 
   defp use_validator(params, types, keys, required, default) do
     changeset = default_validator(params, types, keys, required)
+
     if changeset.valid? do
       {:ok, default |> Map.merge(changeset.changes)}
     else
@@ -126,5 +140,9 @@ defmodule ParamsValidation do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
+  end
+
+  defp log_error(error) do
+    Logger.error("params_validation error: #{inspect(error)}")
   end
 end
