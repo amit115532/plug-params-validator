@@ -1,9 +1,9 @@
-defmodule BodyParamsValidation.MixProject do
+defmodule ParamsValidation.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :body_params_validation,
+      app: :plug_params_validation,
       version: "0.1.5",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
@@ -33,12 +33,12 @@ defmodule BodyParamsValidation.MixProject do
 
   defp package do
     [
-      description: "a plug for body param validation",
+      description: "a plug for params validation",
       licenses: ["MIT License"],
       # These are the default files included in the package
       files: ["lib", "mix.exs", "LICENSE.md", "README.md"],
       maintainers: ["Amit Ozalvo"],
-      links: %{"GitLab" => "https://github.com/amit115532/plug-body-validator"}
+      links: %{"GitLab" => "https://github.com/amit115532/plug-params-validator"}
     ]
   end
 end
