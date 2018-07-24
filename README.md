@@ -37,11 +37,11 @@ post "/register", expect(body_params: %{first_name: :string, last_name: :string,
 end
 ```
 
-if you would like to specify optional fields, you can pass a list to the `:optional_body_params` parameter in `expect/2`
+if you would like to specify optional fields, you can pass a list to the `:optional_body_params` parameter in `expect/1`
 optionals will be defaulted to nil.
 example:
 ```elixir
-post "/register", validate(body_params: %{first_name: :string, last_name: :string, age: :integer, phone: :string}, 
+post "/register", expect(body_params: %{first_name: :string, last_name: :string, age: :integer, phone: :string}, 
     optional_body_params: [:phone]) do
   first_name = conn.body_params.first_name
   last_name = conn.body_params.last_name
