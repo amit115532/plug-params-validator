@@ -55,7 +55,7 @@ end
 this also works for `GET` requests: 
 example:
 ```elixir
-get "/register/:name", validate(path_params: %{name: :string}) do
+get "/register/:name", expect(path_params: %{name: :string}) do
   # name can be used and trusted to be a string
   ...
 end
