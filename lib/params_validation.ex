@@ -22,26 +22,30 @@ defmodule ParamsValidation do
   def expect(opts) do
     body_param_types = opts[:body_params] || %{}
     path_param_types = opts[:path_params] || %{}
+    query_param_types = opts[:query_params] || %{}
     optional_body_params = opts[:optional_body_params] || []
 
-    validate(body_param_types, path_param_types, optional_body_params)
+    validate(body_param_types, path_param_types, query_param_types, optional_body_params)
   end
 
   defp validate(
          body_param_types,
          path_param_types,
+         query_param_types,
          optional_body_params
        ) do
     body_keys = Map.keys(body_param_types)
     path_keys = Map.keys(path_param_types)
+    query_keys = Map.keys(query_param_types)
     required_body_params = body_keys |> Enum.filter(fn key -> key not in optional_body_params end)
     default_body_params = optional_body_params |> Map.new(fn key -> {key, nil} end)
+    default_query_params = query_keys |> Map.new(fn key -> {key, nil} end)
 
     [
       private: %{
         params_validator:
           {body_param_types, body_keys, path_param_types, path_keys, required_body_params,
-           default_body_params}
+           default_body_params, query_param_types, query_keys, default_query_params}
       }
     ]
   end
@@ -52,20 +56,20 @@ defmodule ParamsValidation do
           private: %{
             params_validator:
               {_body_param_types, _body_keys, path_param_types, path_keys, _required_body_params,
-               _default_body_params}
+               _default_body_params, query_param_types, query_keys, default_query_params}
           }
         } = conn,
         log_errors?: log_errors?
       ) do
     path_params = conn.path_params
+    query_params = conn.query_params
 
-    case use_validator(path_params, path_param_types, path_keys, path_keys, %{}) do
-      {:ok, _applied_params} ->
-        conn
-
-      :skipped ->
-        conn
-
+    with {:ok, _applied_params} <-
+           use_validator(path_params, path_param_types, path_keys, path_keys, %{}),
+         {:ok, applied_query_params} <-
+           use_validator(query_params, query_param_types, query_keys, [], default_query_params) do
+      %{conn | query_params: applied_query_params}
+    else
       {:error, errors} ->
         if log_errors?, do: log_error(errors)
 
@@ -81,13 +85,14 @@ defmodule ParamsValidation do
           private: %{
             params_validator:
               {body_param_types, body_keys, path_param_types, path_keys, required_body_params,
-               default_body_params}
+               default_body_params, query_param_types, query_keys, default_query_params}
           }
         } = conn,
         log_errors?: log_errors?
       ) do
     body_params = conn.body_params
     path_params = conn.path_params
+    query_params = conn.query_params
 
     with {:ok, applied_body_params} <-
            use_validator(
@@ -98,8 +103,10 @@ defmodule ParamsValidation do
              default_body_params
            ),
          {:ok, _applied_path_params} <-
-           use_validator(path_params, path_param_types, path_keys, path_keys, %{}) do
-      %{conn | body_params: applied_body_params}
+           use_validator(path_params, path_param_types, path_keys, path_keys, %{}),
+         {:ok, applied_query_params} <-
+           use_validator(query_params, query_param_types, query_keys, [], default_query_params) do
+      %{conn | body_params: applied_body_params, query_params: applied_query_params}
     else
       {:error, errors} ->
         if log_errors?, do: log_error(errors)
@@ -116,6 +123,10 @@ defmodule ParamsValidation do
         _opts
       ) do
     conn
+  end
+
+  defp use_validator(%Plug.Conn.Unfetched{}, _, _, _, _) do
+    {:ok, %{}}
   end
 
   defp use_validator(params, types, keys, required, default) do
