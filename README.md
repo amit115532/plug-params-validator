@@ -20,7 +20,7 @@ In order to get easy access to `expect/1` function.
 
 Next, add the following plug after `plug :match` 
 ```elixir
-plug(ParamsValidation, log_errors?: unquote(log_params_validation_errors?))
+plug(ParamsValidation, log_errors?: true)
 ```
 
 Now, every endpoint with `expect/1` will validate what ever you specify in `expect`
