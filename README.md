@@ -13,20 +13,18 @@ end
 ```
 
 ## Usage
-In your router:
 ```elixir
-import ParamsValidation
+import ParamsValidation, only: [expect: 1]
 ```
+In order to get easy access to `expect/1` function.
 
-in order to get easy access to `expect/1` function and `:params_validation` plug
-
-Then, add the following plug. make sure it happens after the body parser plug:
+Next, add the following plug after `plug :match` 
 ```elixir
-plug :params_validation
+plug(ParamsValidation, log_errors?: unquote(log_params_validation_errors?))
 ```
 
 Now, every endpoint with `expect/1` will validate what ever you specify in `expect`
-example:
+## Example
 ```elixir
 post "/register", expect(body_params: %{first_name: :string, last_name: :string, age: :integer}) do
   first_name = conn.body_params.first_name
@@ -61,7 +59,7 @@ get "/register/:name", expect(path_params: %{name: :string}) do
 end
 ```
 
-You can mix between `body_params` `optional_body_params` and `path_params` inside `POST`, `PUT`...
+You can mix between `body_params` `optional_body_params` `path_params` and `query_params`...
 
 When a request with bad parameters happens, the plug response with
 status code 400 and the following body:
