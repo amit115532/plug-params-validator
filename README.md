@@ -29,7 +29,7 @@ Now, every endpoint with `expect/1` will validate what ever you specify in `expe
 post "/register", expect(body_params: %{first_name: :string, last_name: :string, age: :integer}) do
   first_name = conn.body_params.first_name
   last_name = conn.body_params.last_name
-  age = conn.body_params.num
+  age = conn.body_params.age
 
   ...
 end
@@ -43,7 +43,7 @@ post "/register", expect(body_params: %{first_name: :string, last_name: :string,
     optional_body_params: [:phone]) do
   first_name = conn.body_params.first_name
   last_name = conn.body_params.last_name
-  age = conn.body_params.num
+  age = conn.body_params.age
 
   phone = conn.body_params.phone || Phone.default_value 
   ...
