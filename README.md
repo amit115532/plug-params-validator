@@ -14,9 +14,9 @@ end
 
 ## Usage
 ```elixir
-import ParamsValidation, only: [expect: 1]
+use ParamsValidation
 ```
-In order to get easy access to `expect/1` function.
+In order to get easy access to `expect/1` `body_params/0` and `query_params/0` function/macros.
 
 Next, add the following plug after `plug :match` 
 ```elixir
@@ -24,12 +24,13 @@ plug(ParamsValidation, log_errors?: true)
 ```
 
 Now, every endpoint with `expect/1` will validate what ever you specify in `expect`
+In order to access the expected variables, use `body_params/0` macro
 ## Example
 ```elixir
 post "/register", expect(body_params: %{first_name: :string, last_name: :string, age: :integer}) do
-  first_name = conn.body_params.first_name
-  last_name = conn.body_params.last_name
-  age = conn.body_params.age
+  first_name = body_params().first_name
+  last_name = body_params().last_name
+  age = body_params().age
 
   ...
 end
@@ -41,11 +42,11 @@ example:
 ```elixir
 post "/register", expect(body_params: %{first_name: :string, last_name: :string, age: :integer, phone: :string}, 
     optional_body_params: [:phone]) do
-  first_name = conn.body_params.first_name
-  last_name = conn.body_params.last_name
-  age = conn.body_params.age
+  first_name = body_params().first_name
+  last_name = body_params().last_name
+  age = body_params().age
 
-  phone = conn.body_params.phone || Phone.default_value 
+  phone = body_params().phone || Phone.default_value 
   ...
 end
 ```
@@ -55,6 +56,7 @@ example:
 ```elixir
 get "/register/:name", expect(path_params: %{name: :string}) do
   # name can be used and trusted to be a string
+  do_something_with_name(name)
   ...
 end
 ```

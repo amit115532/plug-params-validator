@@ -5,6 +5,27 @@ require Logger
 defmodule ParamsValidation do
   @moduledoc false
 
+  defmacro __using__(_opts) do
+    quote do
+      require ParamsValidation
+      import ParamsValidation, only: [expect: 1, body_params: 0, query_params: 0]
+    end
+  end
+
+  @spec body_params :: any
+  defmacro body_params do
+    quote do
+      var!(conn).private.params_validator_result.body_params
+    end
+  end
+
+  @spec query_params :: any
+  defmacro query_params do
+    quote do
+      var!(conn).private.params_validator_result.query_params
+    end
+  end
+
   @doc """
   # opts
   :log_errors? - boolean value indicating whether to log errors (defaults to false)
@@ -68,7 +89,8 @@ defmodule ParamsValidation do
            use_validator(path_params, path_param_types, path_keys, path_keys, %{}),
          {:ok, applied_query_params} <-
            use_validator(query_params, query_param_types, query_keys, [], default_query_params) do
-      %{conn | query_params: applied_query_params}
+      params_validator_result = %{query_params: applied_query_params}
+      conn |> Plug.Conn.put_private(:params_validator_result, params_validator_result)
     else
       {:error, errors} ->
         if log_errors?, do: log_error(errors)
@@ -106,7 +128,9 @@ defmodule ParamsValidation do
            use_validator(path_params, path_param_types, path_keys, path_keys, %{}),
          {:ok, applied_query_params} <-
            use_validator(query_params, query_param_types, query_keys, [], default_query_params) do
-      %{conn | body_params: applied_body_params, query_params: applied_query_params}
+
+      params_validator_result = %{body_params: applied_body_params, query_params: applied_query_params}
+      conn |> Plug.Conn.put_private(:params_validator_result, params_validator_result)
     else
       {:error, errors} ->
         if log_errors?, do: log_error(errors)
@@ -125,6 +149,7 @@ defmodule ParamsValidation do
     conn
   end
 
+  @spec use_validator(map, map, list, list, map) :: {:ok, map} | {:error, any}
   defp use_validator(%Plug.Conn.Unfetched{}, _, _, _, _) do
     {:ok, %{}}
   end
