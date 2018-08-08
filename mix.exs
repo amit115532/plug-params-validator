@@ -22,12 +22,11 @@ defmodule ParamsValidation.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:cowboy, "~> 1.0.0"},
-      {:plug, "~> 1.0"},
-      {:poison, "~> 3.0"},
-      {:ecto, "~> 2.2"},
+      {:cowboy, ">= 1.0.0"},
+      {:plug, ">= 1.0.0"},
+      {:poison, ">= 3.0.0"},
+      {:ecto, ">= 2.2.0"},
       {:credo, ">= 0.0.0", only: :dev},
-      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
