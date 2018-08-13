@@ -4,7 +4,7 @@ defmodule ParamsValidation.MixProject do
   def project do
     [
       app: :plug_params_validation,
-      version: "0.2.1",
+      version: "0.2.2",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -25,7 +25,7 @@ defmodule ParamsValidation.MixProject do
       {:cowboy, ">= 1.0.0"},
       {:plug, ">= 1.0.0"},
       {:poison, ">= 3.0.0"},
-      {:ecto, ">= 2.2.0"},
+      {:ecto, ">= 0.0.0"},
       {:credo, ">= 0.0.0", only: :dev},
     ]
   end
