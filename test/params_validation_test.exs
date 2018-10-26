@@ -179,7 +179,7 @@ defmodule ParamsValidation.Test do
 
   test "query params" do
     [private: %{params_validator: validator}] = expect(query_params: %{field_1: :integer})
-    parser_opts = Plug.Parsers.init(parsers: [:json, :urlencoded], json_decoder: Poison)
+    parser_opts = Plug.Parsers.init(parsers: [:json, :urlencoded], json_decoder: Jason)
 
     assert %{state: :unset, private: %{params_validator_result: %{query_params: %{field_1: 1}}}} =
              conn =
@@ -193,9 +193,10 @@ defmodule ParamsValidation.Test do
 
   test "optional query params" do
     [private: %{params_validator: validator}] = expect(query_params: %{field_1: :integer})
-    parser_opts = Plug.Parsers.init(parsers: [:json, :urlencoded], json_decoder: Poison)
+    parser_opts = Plug.Parsers.init(parsers: [:json, :urlencoded], json_decoder: Jason)
 
-    assert %{state: :unset, private: %{params_validator_result: %{query_params: %{field_1: nil}}}} = conn =
+    assert %{state: :unset, private: %{params_validator_result: %{query_params: %{field_1: nil}}}} =
+             conn =
              conn("POST", "/test", nil)
              |> put_private(:params_validator, validator)
              |> Plug.Parsers.call(parser_opts)

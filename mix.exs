@@ -4,7 +4,7 @@ defmodule ParamsValidation.MixProject do
   def project do
     [
       app: :plug_params_validation,
-      version: "0.2.2",
+      version: "0.3.0",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -22,11 +22,9 @@ defmodule ParamsValidation.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:cowboy, ">= 1.0.0"},
-      {:plug, ">= 1.0.0"},
-      {:poison, ">= 3.0.0"},
-      {:ecto, ">= 0.0.0"},
-      {:credo, ">= 0.0.0", only: :dev},
+      {:plug, ">= 0.0.0"},
+      {:jason, ">= 0.0.0"},
+      {:ecto, ">= 0.0.0"}
     ]
   end
 

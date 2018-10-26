@@ -97,7 +97,7 @@ defmodule ParamsValidation do
 
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(400, Poison.encode!(%{errors: errors}))
+        |> send_resp(400, Jason.encode!(%{errors: errors}))
         |> halt
     end
   end
@@ -128,8 +128,11 @@ defmodule ParamsValidation do
            use_validator(path_params, path_param_types, path_keys, path_keys, %{}),
          {:ok, applied_query_params} <-
            use_validator(query_params, query_param_types, query_keys, [], default_query_params) do
+      params_validator_result = %{
+        body_params: applied_body_params,
+        query_params: applied_query_params
+      }
 
-      params_validator_result = %{body_params: applied_body_params, query_params: applied_query_params}
       conn |> Plug.Conn.put_private(:params_validator_result, params_validator_result)
     else
       {:error, errors} ->
@@ -137,7 +140,7 @@ defmodule ParamsValidation do
 
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(400, Poison.encode!(%{errors: errors}))
+        |> send_resp(400, Jason.encode!(%{errors: errors}))
         |> halt
     end
   end
